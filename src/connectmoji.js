@@ -34,27 +34,32 @@ module.exports.setCells = function (board, ...moves) {
     return new_board;
 }
 
+const wcwidth = require('wcwidth');
+
 module.exports.boardToString = function (board) {
+    var max_width = 0;
+    for (symbol of board.data) {
+        max_width = Math.max(wcwidth(symbol), max_width);
+    }
+    var string = "";
     for (var i = 0; i < board.data.length; i++) {
         var entry = board.data[i];
         var character = entry === null ? " " : entry;
-        string += "| " + character + " ";
-        if (i % board.cols)
+        string += "| " + character + (" ").repeat(max_width - wcwidth(character)) + " ";
+        if (i % board.cols == board.cols - 1)
             string += "|\n";
     }
+    string += "|";
     for (var i = 0; i < board.cols; i ++) {
-        prefix = "+";
-        suffix = "+";
-        if (i == 0) {
-            prefix = "|"
-        }
+        var suffix = "-+";
         if (i == board.cols - 1) {
-            suffix = "|"
+            suffix = "-|"
         }
-        string += prefix + "-" + suffix;
+        string += "-".repeat(max_width + 1) + suffix;
     }
+    string += "\n";
     for (var i = 0; i < board.cols; i ++) {
-        string += "| " + String.fromCodePoint(65 + i) + " ";
+        string += "| " + String.fromCodePoint(65 + i) + (" ").repeat(max_width - 1) + " ";
     }
     string += "|";
     return string;
