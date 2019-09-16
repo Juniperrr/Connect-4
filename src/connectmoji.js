@@ -68,3 +68,18 @@ module.exports.letterToCol = function (letter) {
         return null;
     return col;
 }
+
+module.exports.getEmptyRowCol = function (board, letter, empty = null) {
+    var col = module.exports.letterToCol(letter);
+    if (col === null || col + 1 > board.cols)
+        return null;
+    var i;
+    for (i = 0; i < board.rows; i++) {
+        if (board.data[module.exports.rowColToIndex(board, i, col)] != empty)
+            break;
+    }
+    if ( i == 0 )
+        return null
+    else 
+        return {row: i - 1, col: col};
+}
