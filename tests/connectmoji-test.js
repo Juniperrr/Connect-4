@@ -169,7 +169,7 @@ describe('connectmoji', function() {
         });
     });
 
-    describe.only('getEmptyRowCol', function() {
+    describe('getEmptyRowCol', function() {
         it('gives back an empty row col with row number less than lowest occupied row number in column', function() {
             let board = c.generateBoard(3, 2);
             board = c.setCells(

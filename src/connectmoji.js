@@ -83,3 +83,66 @@ module.exports.getEmptyRowCol = function (board, letter, empty = null) {
     else 
         return {row: i - 1, col: col};
 }
+
+module.exports.getAvailableColumns = function (board) {
+    var cols = new Array(0);
+    for (var i = 0; i < board.cols; i++) {
+        var letter = String.fromCodePoint(65 + i);
+        if (module.exports.getEmptyRowCol(board, letter) != null) {
+            cols.push(letter);
+        }
+    }
+    return cols;
+}
+
+module.exports.hasConsecutiveValues = function (board, row, col, n) {
+    var dirs = [[[1, 0], [-1, 0]], [[0, 1], [0, -1]], [[1, 1], [-1, -1]], [[1, -1], [-1, 1]]];
+    var value = board.data[module.exports.rowColToIndex(board, row, col)];
+    for (dir of dirs) {
+        var count = 1;
+        for(ray of dir) {
+            var loc = [row, col];
+            while (board.data[module.exports.rowColToIndex(board, loc[0] + ray[0], loc[1] + ray[1])] == value) {
+                loc[0] += ray[0];
+                loc[1] += ray[1];
+                count++;
+            }
+            if (count >= n)
+                return true;
+        }
+    }
+    return false;
+}
+
+module.exports.autoplay = function (board, s, numConsecutive) {
+    instructions = Array.from(s);
+    var p = [instructions.shift(), instructions.shift()]
+    var winner = undefined;
+
+    var move = instructions.shift();
+    if (move != undefined) {
+        loc = module.exports.getEmptyRowCol(board, move);
+        if (loc == null) {
+            return {board: null, pieces: p, lastPieceMoved: p[0], error: {num: 1, col: move, val: p[0]}}
+        }
+        board = module.exports.setCell(board, loc.row, loc.col, p[0]);
+        if (module.exports.hasConsecutiveValues(board, loc.row, loc.col, numConsecutive)) {
+            if (instructions.length > 0) {
+                return {board: null, pieces: p, lastPieceMoved: p[1], error: {num: 2, col: move, val: p[1]}}
+            } else {
+                return {board: board, pieces: p, lastPieceMoved: p[0], winner: p[0]};
+            }
+        }
+    }
+    if (instructions.length > 0) {
+        var s2 = p[1] + p[0] + instructions.join('');
+        var return_value = module.exports.autoplay(board, s2, numConsecutive);
+        return_value.pieces = p;
+        if (return_value.error != undefined) {
+            return_value.error.num++;
+        }
+        return return_value;
+    }
+
+    return {board: board, pieces: p, lastPieceMoved: p[0]};
+}
