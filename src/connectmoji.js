@@ -37,7 +37,7 @@ module.exports.setCells = function (board, ...moves) {
 const wcwidth = require('wcwidth');
 
 module.exports.boardToString = function (board) {
-    var max_width = 0;
+    var max_width = 1;
     for (symbol of board.data) {
         max_width = Math.max(wcwidth(symbol), max_width);
     }
