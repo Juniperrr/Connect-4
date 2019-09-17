@@ -9,6 +9,9 @@ module.exports.generateBoard = function (rows, cols, fill = null) {
 }
 
 module.exports.rowColToIndex = function (board, row, col) {
+    if (row < 0 || row >= board.rows || col < 0 || col >= board.cols) {
+        return -1;
+    }
     return board.cols * row + col;
 }
 

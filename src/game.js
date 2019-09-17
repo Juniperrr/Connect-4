@@ -25,6 +25,7 @@ if (process.argv[2] != undefined) {
     console.log(c.boardToString(result.board));
 
     if (result.winner != undefined) {
+        c.hasConsecutiveValues(result.board, 1, 2, 3);
         console.log(`Winner is ${result.winner}`);
         return;
     }
